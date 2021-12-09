@@ -5,51 +5,62 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (pairs == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <h1>Hello</h1>
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private Pairs[] pairs;
+    private Price[] price;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+
+        //https://api.n.exchange/en/api/v1/pair/
+        //"sample-data/weather.json"
+        pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
+        //price = await Http.GetFromJsonAsync<Price[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
+
+        foreach (var p in pairs) {
+            Console.WriteLine(p.Name);
+        }
     }
 
-    public class WeatherForecast
+    public class Pairs
     {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        public string Name{ get; set; }
+        public string @Base { get; set; }
+        public string Quote { get; set; }
+        public string Fee_ask { get; set; }
+        public string Fee_bid { get; set; }
+        public bool Disabled { get; set; }
+        public bool Test_mode { get; set; }
+        public bool Orderbook_enabled { get; set; }
+        public bool Reverse_orderbook_enabled { get; set; }
     }
+
+    public class Pair
+    {
+        public string @base { get; set; }
+        public string quote { get; set; }
+    }
+
+    public class Price
+    {
+        public double amount_base { get; set; }
+        public double amount_quote { get; set; }
+        public double timestamp { get; set; }
+        public double price { get; set; }
+        public Pair pair { get; set; }
+        public double max_amount_base { get; set; }
+        public double max_amount_quote { get; set; }
+        public double min_amount_base { get; set; }
+        public double min_amount_quote { get; set; }
+    }
+
 }

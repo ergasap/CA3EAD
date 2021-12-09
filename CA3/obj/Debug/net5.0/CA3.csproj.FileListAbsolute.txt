@@ -626,7 +626,6 @@ C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\ob
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\scopedcss\bundle\CA3.styles.css
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\scopedcss\projectbundle\CA3.bundle.scp.css
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\CA3.RazorTargetAssemblyInfo.cache
-C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\CA3.csproj.CopyComplete
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\CA3.dll
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\ref\CA3.dll
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\obj\Debug\net5.0\CA3.pdb

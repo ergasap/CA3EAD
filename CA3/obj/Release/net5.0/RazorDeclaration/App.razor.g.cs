@@ -4,7 +4,7 @@
 #pragma warning disable 0649
 #pragma warning disable 0169
 
-namespace CA3.Pages
+namespace CA3
 {
     #line hidden
     using System;
@@ -82,70 +82,13 @@ using CA3.Shared;
 #line default
 #line hidden
 #nullable disable
-    [Microsoft.AspNetCore.Components.RouteAttribute("/fetchdata")]
-    public partial class FetchData : Microsoft.AspNetCore.Components.ComponentBase
+    public partial class App : Microsoft.AspNetCore.Components.ComponentBase
     {
         #pragma warning disable 1998
         protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder __builder)
         {
         }
         #pragma warning restore 1998
-#nullable restore
-#line 17 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\Pages\FetchData.razor"
-       
-    private Pairs[] pairs;
-    private Price[] price;
-
-    protected override async Task OnInitializedAsync()
-    {
-
-        //https://api.n.exchange/en/api/v1/pair/
-        //"sample-data/weather.json"
-        pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
-        //price = await Http.GetFromJsonAsync<Price[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
-
-        foreach (var p in pairs) {
-            Console.WriteLine(p.Name);
-        }
-    }
-
-    public class Pairs
-    {
-        public string Name{ get; set; }
-        public string @Base { get; set; }
-        public string Quote { get; set; }
-        public string Fee_ask { get; set; }
-        public string Fee_bid { get; set; }
-        public bool Disabled { get; set; }
-        public bool Test_mode { get; set; }
-        public bool Orderbook_enabled { get; set; }
-        public bool Reverse_orderbook_enabled { get; set; }
-    }
-
-    public class Pair
-    {
-        public string @base { get; set; }
-        public string quote { get; set; }
-    }
-
-    public class Price
-    {
-        public double amount_base { get; set; }
-        public double amount_quote { get; set; }
-        public double timestamp { get; set; }
-        public double price { get; set; }
-        public Pair pair { get; set; }
-        public double max_amount_base { get; set; }
-        public double max_amount_quote { get; set; }
-        public double min_amount_base { get; set; }
-        public double min_amount_quote { get; set; }
-    }
-
-
-#line default
-#line hidden
-#nullable disable
-        [global::Microsoft.AspNetCore.Components.InjectAttribute] private HttpClient Http { get; set; }
     }
 }
 #pragma warning restore 1591
