@@ -91,10 +91,12 @@ using CA3.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 17 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\Pages\FetchData.razor"
+#line 52 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3\Pages\FetchData.razor"
        
     private Pairs[] pairs;
-    private Price[] price;
+    private Cost[] cost;
+    private List<String> allbases;
+    private List<String> allquotes;
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,16 +104,28 @@ using CA3.Shared;
         //https://api.n.exchange/en/api/v1/pair/
         //"sample-data/weather.json"
         pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
-        //price = await Http.GetFromJsonAsync<Price[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
+        //cost = await Http.GetFromJsonAsync<Cost[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
+
 
         foreach (var p in pairs) {
             Console.WriteLine(p.Name);
+            Console.WriteLine(p.Base);
+            Console.WriteLine(p.Quote);
         }
+
+
+        allbases = new List<String>();
+        allBase();
+        Console.WriteLine(allbases.Count);
+
+        allquotes = new List<String>();
+        allQuote();
+        Console.WriteLine(allquotes.Count);
     }
 
     public class Pairs
     {
-        public string Name{ get; set; }
+        public string Name { get; set; }
         public string @Base { get; set; }
         public string Quote { get; set; }
         public string Fee_ask { get; set; }
@@ -124,23 +138,77 @@ using CA3.Shared;
 
     public class Pair
     {
-        public string @base { get; set; }
-        public string quote { get; set; }
+        public string @Base { get; set; }
+        public string Quote { get; set; }
     }
 
-    public class Price
+    public class Cost
     {
-        public double amount_base { get; set; }
-        public double amount_quote { get; set; }
-        public double timestamp { get; set; }
-        public double price { get; set; }
-        public Pair pair { get; set; }
-        public double max_amount_base { get; set; }
-        public double max_amount_quote { get; set; }
-        public double min_amount_base { get; set; }
-        public double min_amount_quote { get; set; }
+        public double Amount_base { get; set; }
+        public double Amount_quote { get; set; }
+        public double Timestamp { get; set; }
+        public double Price { get; set; }
+        public Pair Pair { get; set; }
+        public double Max_amount_base { get; set; }
+        public double Max_amount_quote { get; set; }
+        public double Min_amount_base { get; set; }
+        public double Min_amount_quote { get; set; }
     }
 
+    public void allBase() {
+
+        for (int j = 0; j < pairs.Length; j++) {
+            if (allbases.Count == 0)
+            {
+                allbases.Add(pairs[j].Base);
+            }
+            else
+            {
+                bool flag = true;
+                for (int i = 0; i < allbases.Count; i++)
+                {
+                    if (pairs[j].Base == allbases[i])
+                    {
+                        flag = false;
+                    }
+                }
+                if (flag) { allbases.Add(pairs[j].Base); }
+            }
+        }
+        Console.WriteLine("These are all bases");
+        for (int i = 0; i < allbases.Count; i++) {
+            Console.WriteLine(allbases[i]);
+        }
+    }
+
+    public void allQuote()
+    {
+        for (int j = 0; j < pairs.Length; j++)
+        {
+            if (allquotes.Count == 0)
+            {
+                allquotes.Add(pairs[j].Quote);
+            }
+            else
+            {
+                bool flag = true;
+                for (int i = 0; i < allquotes.Count; i++)
+                {
+
+                    if (pairs[j].Quote == allquotes[i])
+                    {
+                        flag = false;
+                    }
+                }
+                if (flag) { allquotes.Add(pairs[j].Quote); }
+            }
+        }
+        Console.WriteLine("These are all quotes");
+        for (int i = 0; i < allquotes.Count; i++)
+        {
+            Console.WriteLine(allquotes[i]);
+        }
+    }
 
 #line default
 #line hidden
