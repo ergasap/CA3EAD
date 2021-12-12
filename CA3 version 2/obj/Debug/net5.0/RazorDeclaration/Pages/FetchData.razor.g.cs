@@ -91,7 +91,7 @@ using CA3_version_2.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 64 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Pages\FetchData.razor"
+#line 74 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Pages\FetchData.razor"
        
     private Pairs[] pairs;
     private Cost cost;
@@ -99,14 +99,17 @@ using CA3_version_2.Shared;
     private List<String> allquotes;
     private string selectedBase;
     private string selectedQuote;
+    private string errorLabel;
+    private string price;
+    private string explanation;
 
     protected override async Task OnInitializedAsync()
     {
 
-        //https://api.n.exchange/en/api/v1/pair/
-        //"sample-data/weather.json"
         pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
-        cost = await Http.GetFromJsonAsync<Cost>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
+
+        errorLabel = "";
+        price = "";
 
         allbases = new List<String>();
         allBase();
@@ -170,11 +173,7 @@ using CA3_version_2.Shared;
                 if (flag) { allbases.Add(pairs[j].Base); }
             }
         }
-        Console.WriteLine("These are all bases");
-        for (int i = 0; i < allbases.Count; i++)
-        {
-            Console.WriteLine(allbases[i]);
-        }
+
     }
 
     public void allQuote()
@@ -199,23 +198,27 @@ using CA3_version_2.Shared;
                 if (flag) { allquotes.Add(pairs[j].Quote); }
             }
         }
-        Console.WriteLine("These are all quotes");
-        for (int i = 0; i < allquotes.Count; i++)
-        {
-            Console.WriteLine(allquotes[i]);
-        }
+
     }
 
     public async Task getPrice()
     {
-        //https://api.n.exchange/en/api/v1/get_price/BTCLTC/
-        //"https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/"
 
-        //cost = await Http.GetFromJsonAsync<Cost[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
 
-        foreach (var c in cost) {
-            Console.WriteLine(c);
+        if (selectedBase == null || selectedQuote == null)
+        {
+            errorLabel = "You must select a Base and a Quote before getting the price";
         }
+        else
+        {
+            string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/";
+            cost = await Http.GetFromJsonAsync<Cost>(url);
+            price = "The price of the selected pair is: " + cost.Price.ToString() + ".";
+            explanation = "This means that to buy one " + selectedBase + " coin, you must spend " + cost.Price.ToString() + " " + selectedQuote + ".";
+        }
+
+
+
     }
 
 
