@@ -11,12 +11,10 @@
 }
 else
 {
-
-
     <div class="row">
         <div class="col">
             <label>Base</label>
-            <select class="custom-select custom-select-sm">
+            <select class="custom-select custom-select-sm" @bind="@selectedBase">
                 <option selected>Open this select menu</option>
 
                 @foreach (var p in allbases)
@@ -29,7 +27,7 @@ else
 
         <div class="col">
             <label>Quote</label>
-            <select class="custom-select custom-select-sm">
+            <select class="custom-select custom-select-sm" @bind="@selectedQuote">
                 <option selected>Open this select menu</option>
 
                 @foreach (var q in allquotes)
@@ -41,19 +39,35 @@ else
         </div>
 
         <div class="col mt-4">
-            <button class="btn btn-primary">Click me</button>
+            <button class="btn btn-primary" @onclick=getPrice>Get pair price</button>
         </div>
 
     </div>
 
+    <div class="row">
+        <div class="col">
+            <label>You have selected: @selectedBase</label>
+        </div>
+        <div class="col">
+            <label>You have selected: @selectedQuote</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label>The price of the selected pair is: </label>
+        </div>
+    </div>
 
 }
 
 @code {
     private Pairs[] pairs;
-    private Cost[] cost;
+    private Cost cost;
     private List<String> allbases;
     private List<String> allquotes;
+    private string selectedBase;
+    private string selectedQuote;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,24 +75,14 @@ else
         //https://api.n.exchange/en/api/v1/pair/
         //"sample-data/weather.json"
         pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
-        //cost = await Http.GetFromJsonAsync<Cost[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
-
-
-        foreach (var p in pairs)
-        {
-            Console.WriteLine(p.Name);
-            Console.WriteLine(p.Base);
-            Console.WriteLine(p.Quote);
-        }
-
+        cost = await Http.GetFromJsonAsync<Cost>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
 
         allbases = new List<String>();
         allBase();
-        Console.WriteLine(allbases.Count);
 
         allquotes = new List<String>();
         allQuote();
-        Console.WriteLine(allquotes.Count);
+
     }
 
     public class Pairs
@@ -170,4 +174,18 @@ else
             Console.WriteLine(allquotes[i]);
         }
     }
+
+    public async Task getPrice()
+    {
+        //https://api.n.exchange/en/api/v1/get_price/BTCLTC/
+        //"https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/"
+
+        //cost = await Http.GetFromJsonAsync<Cost[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
+
+        /*foreach (var c in cost) {
+            Console.WriteLine(c);
+        }
+        */
+    }
+
 }

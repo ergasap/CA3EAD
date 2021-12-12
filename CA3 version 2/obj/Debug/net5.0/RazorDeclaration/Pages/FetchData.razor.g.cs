@@ -91,12 +91,14 @@ using CA3_version_2.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 52 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Pages\FetchData.razor"
+#line 64 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Pages\FetchData.razor"
        
     private Pairs[] pairs;
-    private Cost[] cost;
+    private Cost cost;
     private List<String> allbases;
     private List<String> allquotes;
+    private string selectedBase;
+    private string selectedQuote;
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,24 +106,14 @@ using CA3_version_2.Shared;
         //https://api.n.exchange/en/api/v1/pair/
         //"sample-data/weather.json"
         pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
-        //cost = await Http.GetFromJsonAsync<Cost[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
-
-
-        foreach (var p in pairs)
-        {
-            Console.WriteLine(p.Name);
-            Console.WriteLine(p.Base);
-            Console.WriteLine(p.Quote);
-        }
-
+        cost = await Http.GetFromJsonAsync<Cost>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
 
         allbases = new List<String>();
         allBase();
-        Console.WriteLine(allbases.Count);
 
         allquotes = new List<String>();
         allQuote();
-        Console.WriteLine(allquotes.Count);
+
     }
 
     public class Pairs
@@ -213,6 +205,19 @@ using CA3_version_2.Shared;
             Console.WriteLine(allquotes[i]);
         }
     }
+
+    public async Task getPrice()
+    {
+        //https://api.n.exchange/en/api/v1/get_price/BTCLTC/
+        //"https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/"
+
+        //cost = await Http.GetFromJsonAsync<Cost[]>("https://api.n.exchange/en/api/v1/get_price/BTCLTC/");
+
+        foreach (var c in cost) {
+            Console.WriteLine(c);
+        }
+    }
+
 
 #line default
 #line hidden
