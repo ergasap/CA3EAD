@@ -1,7 +1,323 @@
 ﻿@page "/"
+@inject HttpClient Http
 
-<h1>Hello, world!</h1>
+<h2>Crypto pairs App</h2>
+<h3>The application that will let you explore more about the crypto world.</h3>
+<br />
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<p>
+    This component will let you know the price of some cryptocurrency pairs thanks to n.exchange api.
+</p>
+<p>
+    Cryptocurrency pairs are assets that can be traded for each other
+    on an exchange  — for example Bitcoin/Litecoin (BTC/LTC) and Ethereum/Bitcoin Cash (ETH/BCH).
+    Trading pairs lets you compare costs between different cryptocurrencies.
+</p>
+
+@if (pairs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col">
+            <label>Base</label>
+            <select class="custom-select custom-select-sm" @bind="@selectedBase">
+                <option selected value="default">Open this select menu</option>
+
+                @foreach (var p in allbases)
+                {
+                    <option value="@p">@p</option>
+                }
+
+            </select>
+        </div>
+
+        <div class="col">
+            <label>Quote</label>
+            <select class="custom-select custom-select-sm" @bind="@selectedQuote">
+                <option selected value="default">Open this select menu</option>
+
+                @foreach (var q in allquotes)
+                {
+                    <option value="@q">@q</option>
+                }
+
+            </select>
+        </div>
+
+        <div class="col mt-4">
+            <button class="btn btn-primary" @onclick=getPrice>Get pair price</button>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label style="color:red">@errorLabel</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label>@price</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label>@explanation</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" style="@invisibleCSS" @onclick="showInputs">Open calculator</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label class=" mt-2" style="@invisibleCSS2">Type how much base or quote would you like to get and it will calculate the other (Note: use " . " for decimal numbers):</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="input-group mt-2" style="width:200px; @invisibleCSS2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">@selectedBase</span>
+                </div>
+                <input type="text" class="form-control" @bind="@inputBase" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+
+            <div class="input-group mt-2" style="width:200px; @invisibleCSS2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">@selectedQuote</span>
+                </div>
+                <input type="text" class="form-control" @bind="@inputQuote" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+
+            <button class="btn btn-primary mt-4" style="@invisibleCSS2" @onclick="calculatePrice">Calculate</button>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label class ="mt-2" style="color:red; @invisibleCSS2">@errorLabel2</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label>@explanation2</label>
+        </div>
+    </div>
+
+}
+
+@code {
+    private Pairs[] pairs;
+    private Cost cost;
+    private Cost cost2;
+    private List<String> allbases;
+    private List<String> allquotes;
+    private string selectedBase;
+    private string selectedQuote;
+    private string errorLabel;
+    private string errorLabel2;
+    private string price;
+    private string explanation;
+    private string explanation2;
+    private string invisibleCSS;
+    private string invisibleCSS2;
+    private string inputBase;
+    private string inputQuote;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
+
+        errorLabel = "";
+        errorLabel2 = "";
+        price = "";
+
+        allbases = new List<String>();
+        allBase();
+
+        allquotes = new List<String>();
+        allQuote();
+
+        invisibleCSS = "display: none";
+        invisibleCSS2 = "display: none";
+
+        //https://api.n.exchange/en/api/v1/get_price/BTCLTC/?amount_base=1.06935074&amount_quote=100
+    }
+
+    public class Pairs
+    {
+        public string Name { get; set; }
+        public string @Base { get; set; }
+        public string Quote { get; set; }
+        public string Fee_ask { get; set; }
+        public string Fee_bid { get; set; }
+        public bool Disabled { get; set; }
+        public bool Test_mode { get; set; }
+        public bool Orderbook_enabled { get; set; }
+        public bool Reverse_orderbook_enabled { get; set; }
+    }
+
+    public class Pair
+    {
+        public string @Base { get; set; }
+        public string Quote { get; set; }
+    }
+
+    public class Cost
+    {
+        public double Amount_base { get; set; }
+        public double Amount_quote { get; set; }
+        public double Timestamp { get; set; }
+        public double Price { get; set; }
+        public Pair Pair { get; set; }
+        public double Max_amount_base { get; set; }
+        public double Max_amount_quote { get; set; }
+        public double Min_amount_base { get; set; }
+        public double Min_amount_quote { get; set; }
+    }
+
+    public void allBase()
+    {
+
+        for (int j = 0; j < pairs.Length; j++)
+        {
+            if (allbases.Count == 0)
+            {
+                allbases.Add(pairs[j].Base);
+            }
+            else
+            {
+                bool flag = true;
+                for (int i = 0; i < allbases.Count; i++)
+                {
+                    if (pairs[j].Base == allbases[i])
+                    {
+                        flag = false;
+                    }
+                }
+                if (flag) { allbases.Add(pairs[j].Base); }
+            }
+        }
+
+    }
+
+    public void allQuote()
+    {
+        for (int j = 0; j < pairs.Length; j++)
+        {
+            if (allquotes.Count == 0)
+            {
+                allquotes.Add(pairs[j].Quote);
+            }
+            else
+            {
+                bool flag = true;
+                for (int i = 0; i < allquotes.Count; i++)
+                {
+
+                    if (pairs[j].Quote == allquotes[i])
+                    {
+                        flag = false;
+                    }
+                }
+                if (flag) { allquotes.Add(pairs[j].Quote); }
+            }
+        }
+
+    }
+
+    public async Task getPrice()
+    {
+        errorLabel = "";
+        price = "";
+        explanation = "";
+
+        if (selectedBase == null || selectedQuote == null || selectedBase == "default" || selectedQuote == "default")
+        {
+            errorLabel = "You must select a base and a quote before getting the price.";
+        }
+        else
+        {
+            try {
+                string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/";
+                cost = await Http.GetFromJsonAsync<Cost>(url);
+                DateTime d = UnixTimeStampToDateTime(cost.Timestamp);
+                price = "The price of the selected pair is: " + cost.Price.ToString() + " (Last updated: " + d.ToString() + ").";
+                explanation = "This means that in order to buy one " + selectedBase + " coin, you must spend " + cost.Price.ToString() + " " + selectedQuote + ".";
+                invisibleCSS = "";
+            }
+            catch (Exception e) {
+                errorLabel = "The API returned 400 bad request. Try again or change any of the cryptocurrencies.";
+            }
+        }
+    }
+
+    public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+    {
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
+    }
+
+    public void showInputs()
+    {
+        invisibleCSS2 = "";
+    }
+
+    public async Task calculatePrice()
+    {
+
+        errorLabel2 = "";
+        explanation2 = "";
+
+        if ((inputBase == null && inputQuote == null) || (inputBase == "" && inputQuote == "") || (inputBase == null && inputQuote == "") || (inputBase == "" && inputQuote == null))
+        {
+            errorLabel2 = "You must select either base quantity or a quote quantity.";
+        }
+        else
+        {
+            try {
+                if (inputQuote == "" || inputQuote == null)
+                {
+                    string amountBase = "amount_base=" + inputBase;
+                    string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/?" + amountBase;
+                    cost2 = await Http.GetFromJsonAsync<Cost>(url);
+                    explanation2 = "For the amount of " + inputBase + " " + selectedBase + " you must spend " + cost2.Amount_quote.ToString() + " " + selectedQuote;
+                }
+                else
+                {
+                    if (inputBase == "" || inputBase == null)
+                    {
+                        string amountQuote = "amount_quote=" + inputQuote;
+                        string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/?" + amountQuote;
+                        cost2 = await Http.GetFromJsonAsync<Cost>(url);
+                        explanation2 = "For the amount of " + inputQuote + " " + selectedQuote + " you must spend " + cost2.Amount_base.ToString() + " " + selectedBase;
+                    }
+                    else
+                    {
+                        errorLabel2 = "You must select either a base quantity or a quote quantity, not both.";
+                    }
+                }
+            }
+            catch (Exception e){
+                errorLabel2 = "The API returned 400 bad request. Try again or use smaller/bigger quantities.";
+            }
+        }
+    }
+}

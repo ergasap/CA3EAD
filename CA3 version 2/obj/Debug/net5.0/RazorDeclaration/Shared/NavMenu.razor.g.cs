@@ -90,7 +90,7 @@ using CA3_version_2.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 28 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Shared\NavMenu.razor"
+#line 18 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Shared\NavMenu.razor"
        
     private bool collapseNavMenu = true;
 

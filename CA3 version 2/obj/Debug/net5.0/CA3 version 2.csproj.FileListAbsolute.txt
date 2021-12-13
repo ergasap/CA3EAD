@@ -404,8 +404,6 @@ C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 ve
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\CA3 version 2.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\CA3 version 2.RazorComponent.input.cache
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\RazorDeclaration\App.razor.g.cs
-C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\RazorDeclaration\Pages\Counter.razor.g.cs
-C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\RazorDeclaration\Pages\FetchData.razor.g.cs
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\RazorDeclaration\Pages\Index.razor.g.cs
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\RazorDeclaration\Shared\SurveyPrompt.razor.g.cs
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\RazorDeclaration\_Imports.razor.g.cs
@@ -417,8 +415,6 @@ C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 ve
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\CA3 version 2.TagHelpers.output.cache
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\CA3 version 2.RazorCoreGenerate.cache
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\Razor\App.razor.g.cs
-C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\Razor\Pages\Counter.razor.g.cs
-C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\Razor\Pages\FetchData.razor.g.cs
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\Razor\Pages\Index.razor.g.cs
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\Razor\Shared\SurveyPrompt.razor.g.cs
 C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\obj\Debug\net5.0\Razor\_Imports.razor.g.cs
