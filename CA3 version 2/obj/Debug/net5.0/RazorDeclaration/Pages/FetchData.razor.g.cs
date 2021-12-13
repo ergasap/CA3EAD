@@ -91,17 +91,25 @@ using CA3_version_2.Shared;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 74 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Pages\FetchData.razor"
+#line 120 "C:\Users\ernes\Desktop\TUD\Enterprise Applications Development\CA3\CA3EAD\CA3 version 2\Pages\FetchData.razor"
        
     private Pairs[] pairs;
     private Cost cost;
+    private Cost cost2;
     private List<String> allbases;
     private List<String> allquotes;
     private string selectedBase;
     private string selectedQuote;
     private string errorLabel;
+    private string errorLabel2;
     private string price;
     private string explanation;
+    private string explanation2;
+    private string invisibleCSS;
+    private string invisibleCSS2;
+    private string inputBase;
+    private string inputQuote;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +117,7 @@ using CA3_version_2.Shared;
         pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
 
         errorLabel = "";
+        errorLabel2 = "";
         price = "";
 
         allbases = new List<String>();
@@ -117,6 +126,10 @@ using CA3_version_2.Shared;
         allquotes = new List<String>();
         allQuote();
 
+        invisibleCSS = "display: none";
+        invisibleCSS2 = "display: none";
+
+        //https://api.n.exchange/en/api/v1/get_price/BTCLTC/?amount_base=1.06935074&amount_quote=100
     }
 
     public class Pairs
@@ -203,24 +216,88 @@ using CA3_version_2.Shared;
 
     public async Task getPrice()
     {
+        errorLabel = "";
+        price = "";
+        explanation = "";
 
-
-        if (selectedBase == null || selectedQuote == null)
+        if (selectedBase == null || selectedQuote == null || selectedBase == "default" || selectedQuote == "default")
         {
-            errorLabel = "You must select a Base and a Quote before getting the price";
+            errorLabel = "You must select a base and a quote before getting the price.";
         }
         else
         {
-            string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/";
-            cost = await Http.GetFromJsonAsync<Cost>(url);
-            price = "The price of the selected pair is: " + cost.Price.ToString() + ".";
-            explanation = "This means that to buy one " + selectedBase + " coin, you must spend " + cost.Price.ToString() + " " + selectedQuote + ".";
+            try {
+                string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/";
+                cost = await Http.GetFromJsonAsync<Cost>(url);
+                DateTime d = UnixTimeStampToDateTime(cost.Timestamp);
+                price = "The price of the selected pair is: " + cost.Price.ToString() + " (Last updated: " + d.ToString() + ").";
+                explanation = "This means that in order to buy one " + selectedBase + " coin, you must spend " + cost.Price.ToString() + " " + selectedQuote + ".";
+                invisibleCSS = "";
+            }
+            catch (Exception e) {
+                errorLabel = "The API returned 400 bad request. Try again or change any of the cryptocurrencies.";
+            }
         }
-
 
 
     }
 
+    public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+    {
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
+    }
+
+    public void showInputs()
+    {
+        invisibleCSS2 = "";
+    }
+
+    public async Task calculatePrice()
+    {
+
+        errorLabel2 = "";
+        explanation2 = "";
+
+        if ((inputBase == null && inputQuote == null) || (inputBase == "" && inputQuote == "") || (inputBase == null && inputQuote == "") || (inputBase == "" && inputQuote == null))
+        {
+            errorLabel2 = "You must select either base quantity or a quote quantity.";
+        }
+        else
+        {
+            try {
+                if (inputQuote == "" || inputQuote == null)
+                {
+                    string amountBase = "amount_base=" + inputBase;
+                    string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/?" + amountBase;
+                    cost2 = await Http.GetFromJsonAsync<Cost>(url);
+                    explanation2 = "For " + inputBase + " amount of " + selectedBase + " you must spend " + cost2.Amount_quote.ToString() + " " + selectedQuote;
+                }
+                else
+                {
+                    if (inputBase == "" || inputBase == null)
+                    {
+                        string amountQuote = "amount_quote=" + inputQuote;
+                        string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/?" + amountQuote;
+                        cost2 = await Http.GetFromJsonAsync<Cost>(url);
+                        explanation2 = "For " + inputQuote + " amount of " + selectedQuote + " you must spend " + cost2.Amount_base.ToString() + " " + selectedBase;
+                    }
+                    else
+                    {
+                        errorLabel2 = "You must select either a base quantity or a quote quantity, not both.";
+                    }
+                }
+            }
+            catch (Exception e){
+                errorLabel2 = "The API returned 400 bad request. Try again or use smaller quantities.";
+            }
+
+
+
+
+        }
+    }
 
 #line default
 #line hidden

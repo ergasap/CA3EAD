@@ -22,7 +22,7 @@ else
         <div class="col">
             <label>Base</label>
             <select class="custom-select custom-select-sm" @bind="@selectedBase">
-                <option selected>Open this select menu</option>
+                <option selected value="default">Open this select menu</option>
 
                 @foreach (var p in allbases)
                 {
@@ -35,7 +35,7 @@ else
         <div class="col">
             <label>Quote</label>
             <select class="custom-select custom-select-sm" @bind="@selectedQuote">
-                <option selected>Open this select menu</option>
+                <option selected value="default">Open this select menu</option>
 
                 @foreach (var q in allquotes)
                 {
@@ -53,7 +53,7 @@ else
 
     <div class="row">
         <div class="col">
-            <label>@errorLabel</label>
+            <label style="color:red">@errorLabel</label>
         </div>
     </div>
 
@@ -69,18 +69,72 @@ else
         </div>
     </div>
 
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-primary" style="@invisibleCSS" @onclick="showInputs">Open calculator</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label class=" mt-2" style="@invisibleCSS2">Type how much base or quote would you like to get and it will calculate the other (Note: use " . " for decimal numbers):</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="input-group mt-2" style="width:200px; @invisibleCSS2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">@selectedBase</span>
+                </div>
+                <input type="text" class="form-control" placeholder="1.06935074" @bind="@inputBase" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+
+            <div class="input-group mt-2" style="width:200px; @invisibleCSS2">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">@selectedQuote</span>
+                </div>
+                <input type="text" class="form-control" placeholder="100" @bind="@inputQuote" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
+            </div>
+        </div>
+
+        <div class="col">
+            <button class="btn btn-primary" style="@invisibleCSS2" @onclick="calculatePrice">Calculate</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label style="color:red; @invisibleCSS2">@errorLabel2</label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label>@explanation2</label>
+        </div>
+    </div>
+
 }
 
 @code {
     private Pairs[] pairs;
     private Cost cost;
+    private Cost cost2;
     private List<String> allbases;
     private List<String> allquotes;
     private string selectedBase;
     private string selectedQuote;
     private string errorLabel;
+    private string errorLabel2;
     private string price;
     private string explanation;
+    private string explanation2;
+    private string invisibleCSS;
+    private string invisibleCSS2;
+    private string inputBase;
+    private string inputQuote;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,6 +142,7 @@ else
         pairs = await Http.GetFromJsonAsync<Pairs[]>("https://api.n.exchange/en/api/v1/pair/");
 
         errorLabel = "";
+        errorLabel2 = "";
         price = "";
 
         allbases = new List<String>();
@@ -96,6 +151,10 @@ else
         allquotes = new List<String>();
         allQuote();
 
+        invisibleCSS = "display: none";
+        invisibleCSS2 = "display: none";
+
+        //https://api.n.exchange/en/api/v1/get_price/BTCLTC/?amount_base=1.06935074&amount_quote=100
     }
 
     public class Pairs
@@ -182,22 +241,80 @@ else
 
     public async Task getPrice()
     {
+        errorLabel = "";
+        price = "";
+        explanation = "";
 
-
-        if (selectedBase == null || selectedQuote == null)
+        if (selectedBase == null || selectedQuote == null || selectedBase == "default" || selectedQuote == "default")
         {
-            errorLabel = "You must select a Base and a Quote before getting the price";
+            errorLabel = "You must select a base and a quote before getting the price.";
         }
         else
         {
-            string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/";
-            cost = await Http.GetFromJsonAsync<Cost>(url);
-            price = "The price of the selected pair is: " + cost.Price.ToString() + ".";
-            explanation = "This means that to buy one " + selectedBase + " coin, you must spend " + cost.Price.ToString() + " " + selectedQuote + ".";
+            try {
+                string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/";
+                cost = await Http.GetFromJsonAsync<Cost>(url);
+                DateTime d = UnixTimeStampToDateTime(cost.Timestamp);
+                price = "The price of the selected pair is: " + cost.Price.ToString() + " (Last updated: " + d.ToString() + ").";
+                explanation = "This means that in order to buy one " + selectedBase + " coin, you must spend " + cost.Price.ToString() + " " + selectedQuote + ".";
+                invisibleCSS = "";
+            }
+            catch (Exception e) {
+                errorLabel = "The API returned 400 bad request. Try again or change any of the cryptocurrencies.";
+            }
         }
-
-
-
     }
 
+    public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+    {
+        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
+    }
+
+    public void showInputs()
+    {
+        invisibleCSS2 = "";
+    }
+
+    public async Task calculatePrice()
+    {
+
+        errorLabel2 = "";
+        explanation2 = "";
+
+        if ((inputBase == null && inputQuote == null) || (inputBase == "" && inputQuote == "") || (inputBase == null && inputQuote == "") || (inputBase == "" && inputQuote == null))
+        {
+            errorLabel2 = "You must select either base quantity or a quote quantity.";
+        }
+        else
+        {
+            try {
+                if (inputQuote == "" || inputQuote == null)
+                {
+                    string amountBase = "amount_base=" + inputBase;
+                    string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/?" + amountBase;
+                    cost2 = await Http.GetFromJsonAsync<Cost>(url);
+                    explanation2 = "For " + inputBase + " amount of " + selectedBase + " you must spend " + cost2.Amount_quote.ToString() + " " + selectedQuote;
+                }
+                else
+                {
+                    if (inputBase == "" || inputBase == null)
+                    {
+                        string amountQuote = "amount_quote=" + inputQuote;
+                        string url = "https://api.n.exchange/en/api/v1/get_price/" + selectedBase + selectedQuote + "/?" + amountQuote;
+                        cost2 = await Http.GetFromJsonAsync<Cost>(url);
+                        explanation2 = "For " + inputQuote + " amount of " + selectedQuote + " you must spend " + cost2.Amount_base.ToString() + " " + selectedBase;
+                    }
+                    else
+                    {
+                        errorLabel2 = "You must select either a base quantity or a quote quantity, not both.";
+                    }
+                }
+            }
+            catch (Exception e){
+                errorLabel2 = "The API returned 400 bad request. Try again or use smaller/bigger quantities.";
+            }
+        }
+    }
 }
